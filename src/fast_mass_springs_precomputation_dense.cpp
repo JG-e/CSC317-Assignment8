@@ -24,6 +24,11 @@ bool fast_mass_springs_precomputation_dense(
   signed_incidence_matrix_dense(V.rows(), E, A);
 
   M = Eigen::MatrixXd::Zero(V.rows(),V.rows());
+  
+  M = MatrixXd::Zero(V.rows(), V.rows());
+  for (int i = 0; i < V.rows(); i++) {
+    M(i, i) = m[i];
+  }
 
   C = Eigen::MatrixXd::Zero(b.rows(), V.rows());
   for (int i = 0; i < b.rows(); i++) {
@@ -37,7 +42,6 @@ bool fast_mass_springs_precomputation_dense(
     r(i) = (V0 - V1).norm();
   }
 
-  M.diagonal() += m;
 
   Q = k * A.transpose() * A + M / pow(delta_t,2);
   MatrixXd Qc = w * C.transpose() * C; // Qc = wCᵀC
