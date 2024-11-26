@@ -1,5 +1,6 @@
 #include "fast_mass_springs_step_sparse.h"
 #include <igl/matlab_format.h>
+#define w 1e10
 
 void fast_mass_springs_step_sparse(
   const Eigen::MatrixXd & V,
@@ -18,10 +19,21 @@ void fast_mass_springs_step_sparse(
   Eigen::MatrixXd & Unext)
 {
   //////////////////////////////////////////////////////////////////////////////
-  // Replace with your code
+  int satisfied = 50;
+  Eigen::MatrixXd d = Eigen::MatrixXd::Zero(E.rows(), 3);
+  Eigen::MatrixXd Y = M * (2 * Ucur - Uprev) / pow(delta_t, 2) + fext;
+  Eigen::MatrixXd var_b;
+  Eigen::MatrixXd l = Ucur;
+  Unext = Ucur;
+
   for(int iter = 0;iter < 50;iter++)
   {
-    const Eigen::MatrixXd l = Ucur;
+    // Local step: Given current values of p, determine dij for each spring
+    for (int i = 0; i < E.rows(); i++) {
+      d.row(i) = r[i] * (Unext.row( E(i,0) ) - Unext.row( E(i,1) )).normalized();
+    }
+
+    l = k * A.transpose() * d + Y + w * C.transpose() * C * V;
     Unext = prefactorization.solve(l);
   }
   //////////////////////////////////////////////////////////////////////////////
