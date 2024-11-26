@@ -7,9 +7,13 @@ void signed_incidence_matrix_sparse(
   Eigen::SparseMatrix<double>  & A)
 {
   //////////////////////////////////////////////////////////////////////////////
-  // Replace with your code
   std::vector<Eigen::Triplet<double> > ijv;
-  ijv.emplace_back(0,0,1234.5678);
+  for(int e = 0; e<E.rows(); e++)
+  {
+    ijv.emplace_back(e, E(e,0), 1);
+    ijv.emplace_back(e, E(e,1), -1);
+  }
+
   A.resize(E.rows(),n);
   A.setFromTriplets(ijv.begin(),ijv.end());
   //////////////////////////////////////////////////////////////////////////////
